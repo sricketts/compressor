@@ -38,6 +38,7 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
     
     outputGainSlider.addListener(this);
     thresholdSlider.addListener(this);
+    ratioSlider.addListener(this);
     
     // Use a timer to update editor state periodically. There are other clients besides this editor that
     // may be changing the state of the processor, the timer synchronizes this editor with that state.
@@ -146,6 +147,7 @@ RatioSlider::RatioSlider()
     setTextValueSuffix(":1");
     setTextBoxStyle (Slider::TextBoxRight, false, 70, 20);
     setPopupDisplayEnabled (true, this);
+    setSkewFactorFromMidPoint(2.0f);
 }
 
 RatioSlider::~RatioSlider()
