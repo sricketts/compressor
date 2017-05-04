@@ -28,6 +28,14 @@ public:
     String getTextFromValue (double value) override;
 };
 
+class RatioSlider : public Slider {
+public:
+    RatioSlider ();
+    ~RatioSlider();
+    
+    String getTextFromValue (double value) override;
+};
+
 //==============================================================================
 /**
 */
@@ -48,9 +56,11 @@ private:
 
     CompressorDBSlider outputGainSlider;
     CompressorDBSlider thresholdSlider;
+    RatioSlider ratioSlider;
     
     Label outputGainLabel;
     Label thresholdLabel;
+    Label ratioLabel;
     
     void sliderValueChanged (Slider* slider) override;
     void sliderDragStarted (Slider* slider) override;

@@ -30,6 +30,12 @@ CompressorAudioProcessorEditor::CompressorAudioProcessorEditor (CompressorAudioP
     thresholdSlider.setValue(*(p.thresholdDBParameter));
     addAndMakeVisible(&thresholdSlider);
     
+    addAndMakeVisible(ratioLabel);
+    ratioLabel.setText(p.ratioParameter->name, dontSendNotification);
+    ratioLabel.attachToComponent(&ratioSlider, true);
+    ratioSlider.setValue(*(p.ratioParameter));
+    addAndMakeVisible(ratioSlider);
+    
     outputGainSlider.addListener(this);
     thresholdSlider.addListener(this);
     
@@ -59,7 +65,8 @@ void CompressorAudioProcessorEditor::resized()
     const int sliderHeight = 20;
     
     thresholdSlider.setBounds(sliderX, 30, sliderWidth, sliderHeight);
-    outputGainSlider.setBounds (sliderX, 70, sliderWidth, sliderHeight);
+    ratioSlider.setBounds (sliderX, 70, sliderWidth, sliderHeight);
+    outputGainSlider.setBounds (sliderX, 110, sliderWidth, sliderHeight);
 }
 
 void CompressorAudioProcessorEditor::sliderValueChanged(Slider *slider)
@@ -68,6 +75,8 @@ void CompressorAudioProcessorEditor::sliderValueChanged(Slider *slider)
         *(processor.outputGainDBParameter) = outputGainSlider.getValue();
     } else if (slider == &thresholdSlider) {
         *(processor.thresholdDBParameter) = thresholdSlider.getValue();
+    } else if (slider == &ratioSlider) {
+        *(processor.ratioParameter) = ratioSlider.getValue();
     } else {
         assert(0);
     }
@@ -79,6 +88,8 @@ void CompressorAudioProcessorEditor::sliderDragStarted (Slider* slider)
         processor.outputGainDBParameter->beginChangeGesture();
     } else if (slider == &thresholdSlider) {
         processor.thresholdDBParameter->beginChangeGesture();
+    } else if (slider == &ratioSlider) {
+        processor.ratioParameter->beginChangeGesture();
     } else {
         assert(0);
     }
@@ -90,6 +101,8 @@ void CompressorAudioProcessorEditor::sliderDragEnded (Slider* slider)
         processor.outputGainDBParameter->endChangeGesture();
     } else if (slider == &thresholdSlider) {
         processor.thresholdDBParameter->endChangeGesture();
+    } else if (slider == &ratioSlider) {
+        processor.ratioParameter->endChangeGesture();
     } else {
         assert(0);
     }
@@ -100,6 +113,7 @@ void CompressorAudioProcessorEditor::timerCallback()
     // update the slider based on the value of the parameter in the processor
     outputGainSlider.setValue(*(processor.outputGainDBParameter));
     thresholdSlider.setValue(*(processor.thresholdDBParameter));
+    ratioSlider.setValue(*(processor.ratioParameter));
 }
 
 CompressorDBSlider::CompressorDBSlider()
@@ -123,6 +137,25 @@ String CompressorDBSlider::getTextFromValue(double value)
     } else {
         return String(value, 1) + getTextValueSuffix();
     }
+}
+
+RatioSlider::RatioSlider()
+{
+    setSliderStyle (Slider::LinearHorizontal);
+    setRange(1, 64);
+    setTextValueSuffix(":1");
+    setTextBoxStyle (Slider::TextBoxRight, false, 70, 20);
+    setPopupDisplayEnabled (true, this);
+}
+
+RatioSlider::~RatioSlider()
+{
+    
+}
+
+String RatioSlider::getTextFromValue(double value)
+{
+    return String(value, 1) + getTextValueSuffix();
 }
 
 

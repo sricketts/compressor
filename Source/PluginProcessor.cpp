@@ -33,6 +33,9 @@ CompressorAudioProcessor::CompressorAudioProcessor()
                                                                    "Threshold",
                                                                    NormalisableRange<float> (-100.0f, 6.0f),
                                                                    0.0f));
+    addParameter (ratioParameter = new AudioParameterFloat ("ratio", "Ratio",
+                                                            NormalisableRange<float> (1.0f, 64.0f),
+                                                            4.0f));
 }
 
 CompressorAudioProcessor::~CompressorAudioProcessor()
@@ -146,32 +149,22 @@ void CompressorAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuff
 
     // fixme: add sensing parameter for peak vs RMS. currently using peak
     // fixme: add attack/release
-
-    // FIXME
-    ratio = 4;
-    // limiter ratio can be set to 60 i read somewhere
-    
-    
     
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
-        const float peak = buffer.getMagnitude(channel, 0, buffer.getNumSamples());
+        const int numSamples = buffer.getNumSamples();
+        const float peak = buffer.getMagnitude(channel, 0, numSamples);
         const float peakDB = Decibels::gainToDecibels<float>(peak);
         
         // Peak Sensing
         // attack time is 0 (FIXME)
         // release time is the time it takes to play the buffer (FIXME)
         if (peakDB > *thresholdDBParameter) {
-            const float cs = 1.0f - (1.0f / ratio);
-            const float gainDB = cs * (*thresholdDBParameter - peakDB);
+            const float cs = 1.0f - (1.0f / *ratioParameter);
+            float gainDB = cs * (*thresholdDBParameter - peakDB);
+            gainDB = jmin<float>(0, gainDB);
             const float gain = Decibels::decibelsToGain<float>(gainDB);
-            
-            float* channelData = buffer.getWritePointer (channel);
-            
-            for (int i = 0; i < buffer.getNumSamples(); i++) {
-                const float value = channelData[i];
-                channelData[i] = gain * value;
-            }
+            buffer.applyGain(channel, 0, numSamples, gain);
         }
     }
     const float outputGain = Decibels::decibelsToGain<float>(*outputGainDBParameter);

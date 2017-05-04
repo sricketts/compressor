@@ -58,7 +58,7 @@ public:
     
     AudioParameterFloat* outputGainDBParameter;
     AudioParameterFloat* thresholdDBParameter;
-    float ratio;
+    AudioParameterFloat* ratioParameter;
     
 private:
     //==============================================================================
