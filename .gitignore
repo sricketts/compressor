@@ -1,1 +1,6 @@
-Builds/
+Builds/MaxOSX/build/*
+*.pbxuser
+*.modelv3
+
+.DS_Store
+profile
